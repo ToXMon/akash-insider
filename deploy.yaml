@@ -1,0 +1,56 @@
+---
+version: "2.0"
+
+services:
+  web:
+    image: akashinsider:latest
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+    env:
+      - NODE_ENV=production
+      - PORT=3000
+    command:
+      - "node"
+      - "server.js"
+    # Mount persistent storage for database
+    params:
+      storage:
+        - name: database
+          mount: /app/database.sqlite
+          readOnly: false
+
+profiles:
+  compute:
+    web:
+      resources:
+        cpu:
+          units: 1000
+        memory:
+          size: 1Gi
+        storage:
+          - size: 2Gi
+          - name: database
+            size: 1Gi
+            attributes:
+              persistent: true
+              class: beta2
+  placement:
+    akash:
+      attributes:
+        host: akash
+      signedBy:
+        anyOf:
+          - akash1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+      pricing:
+        web:
+          denom: uakt
+          amount: 10000
+
+deployment:
+  web:
+    akash:
+      profile: web
+      count: 1

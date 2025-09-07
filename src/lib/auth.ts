@@ -26,9 +26,16 @@ export async function verifyAdminToken(token: string) {
 }
 
 export function findAdminByEmail(email: string) {
-  return db.prepare('SELECT * FROM admin_users WHERE email = ?').get(email) as
-    | { id: number; email: string; name: string; password_hash: string }
-    | undefined;
+  try {
+    const result = db.prepare('SELECT * FROM admin_users WHERE email = ?').get(email) as
+      | { id: number; email: string; name: string; password_hash: string }
+      | undefined;
+    console.log('findAdminByEmail result for', email, ':', result ? 'found' : 'not found');
+    return result;
+  } catch (error) {
+    console.error('Database error in findAdminByEmail:', error);
+    throw error;
+  }
 }
 
 export async function verifyPassword(password: string, hash: string) {

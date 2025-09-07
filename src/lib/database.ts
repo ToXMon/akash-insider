@@ -43,20 +43,31 @@ const SCHEMA_SQL = `
 `;
 
 export function initializeDatabase() {
-  db.exec(SCHEMA_SQL);
+  try {
+    console.log('Initializing database...');
+    db.exec(SCHEMA_SQL);
+    console.log('Database schema created');
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@akash.network';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@akash.network';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
-  const stmt = db.prepare('SELECT * FROM admin_users WHERE email = ?');
-  const adminExists = stmt.get(adminEmail);
+    const stmt = db.prepare('SELECT * FROM admin_users WHERE email = ?');
+    const adminExists = stmt.get(adminEmail);
 
-  if (!adminExists) {
-    const passwordHash = bcrypt.hashSync(adminPassword, 10);
-    const insertStmt = db.prepare('INSERT INTO admin_users (name, email, password_hash) VALUES (?, ?, ?)');
-    insertStmt.run('Admin', adminEmail, passwordHash);
-    // eslint-disable-next-line no-console
-    console.log('Default admin user created.');
+    if (!adminExists) {
+      const passwordHash = bcrypt.hashSync(adminPassword, 10);
+      const insertStmt = db.prepare('INSERT INTO admin_users (name, email, password_hash) VALUES (?, ?, ?)');
+      insertStmt.run('Admin', adminEmail, passwordHash);
+      console.log('Default admin user created with email:', adminEmail);
+    } else {
+      console.log('Admin user already exists for email:', adminEmail);
+    }
+  } catch (error) {
+    console.error('Database initialization error:', error);
+    throw error;
   }
 }
+
+// Initialize database on import
+initializeDatabase();
 
