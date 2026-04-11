@@ -56,7 +56,6 @@ export function initializeDatabase() {
     const insertStmt = db.prepare('INSERT INTO admin_users (name, email, password_hash) VALUES (?, ?, ?)');
     insertStmt.run('Admin', adminEmail, passwordHash);
     // eslint-disable-next-line no-console
-    console.log('Default admin user created.');
   }
 }
 

@@ -90,11 +90,9 @@ if (isNodeEnvironment()) {
         meterProvider: meterProvider as unknown as MeterProviderInterface,
         start: async () => {
           await _sdk.start();
-          console.log('OpenTelemetry SDK initialized');
         },
         shutdown: async () => {
           await _sdk.shutdown();
-          console.log('OpenTelemetry SDK shut down');
         },
       };
 
@@ -109,7 +107,6 @@ if (isNodeEnvironment()) {
             if (sdk?.shutdown) {
               await sdk.shutdown();
             }
-            console.log('OpenTelemetry SDK shut down successfully');
             process.exit(0);
           } catch (error) {
             console.error('Error shutting down OpenTelemetry SDK:', error);
